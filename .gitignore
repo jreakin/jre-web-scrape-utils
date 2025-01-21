@@ -1,3 +1,15 @@
+<<<<<<< HEAD
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+.venv
+=======
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -169,3 +181,4 @@ cython_debug/
 
 # PyPI configuration file
 .pypirc
+>>>>>>> b797fdc3879b0d13fb2c6d27f25fa0199367f4c5

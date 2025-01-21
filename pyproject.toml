@@ -1,0 +1,21 @@
+[project]
+name = "web-scrape-utils"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { name = "jreakin", email = "johnreakin@gmail.com" }
+]
+requires-python = ">=3.12.8"
+dependencies = [
+    "icecream>=2.1.4",
+    "selenium>=4.28.0",
+    "undetected-chromedriver>=3.5.5",
+]
+
+[project.scripts]
+web-scrape-utils = "web_scrape_utils:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
