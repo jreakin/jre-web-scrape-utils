@@ -61,9 +61,11 @@ class BraveBrowser:
 
 @dataclass
 class WebDriverBuilder:
-    config: BrowserConfig
-    options: BrowserOptions = field(default_factory=ChromeOptions)
-    _browser: BrowserDriver = field(default_factory=ChromeDriver)
+
+    def __init__(self, config: BrowserConfig):
+        self.config = config
+        self.options: BrowserOptions = field(default_factory=ChromeOptions)
+        self._browser: BrowserDriver = field(default_factory=ChromeDriver)
 
     def with_brave(self) -> Self:
         self.options = BraveOptions()
