@@ -112,12 +112,12 @@ class CreateWebDriver:
         self.wait = WebDriverWait(self.driver, 10)
         return self.driver
     
-    def __enter__(self) -> BrowserDriver:
-        return self.create()
+    # def __enter__(self) -> BrowserDriver:
+    #     return self.create()
     
-    def __exit__(self, *args) -> None:
-        if self.driver:
-            self.driver.quit()
+    # def __exit__(self, *args) -> None:
+    #     if self.driver:
+    #         self.driver.quit()
     
     def wait_for_clickable(self, by: By, value: str) -> None:
         if not self.wait:
