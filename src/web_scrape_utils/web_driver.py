@@ -50,13 +50,13 @@ class Browser(Protocol):
 
 
 class ChromeBroswer:
-    def create_driver(self, options: BrowserOptions) -> ChromeDriver:
+    def create_driver(self, options: ChromeOptions) -> ChromeDriver:
         return ChromeDriver(options=options)
     
 class BraveBrowser:
     binary_location: Path = Path.home() / 'Applications/Brave Browser.app/Contents/MacOS/Brave Browser'
-    def create_driver(self, options: BrowserOptions) -> BraveDriver:
-        return BraveDriver(options=options)
+    def create_driver(self, options: BraveOptions) -> BraveDriver:
+        return BraveDriver(options=BraveOptions(options))
     
 
 @dataclass
@@ -67,7 +67,7 @@ class WebDriverBuilder:
 
     def with_brave(self) -> Self:
         self.options = BraveOptions()
-        self._browser = BraveBrowser()
+        self._browser = BraveBrowser(download_folder=self.config.download_folder)
         return self
 
     def build_options(self):
@@ -87,19 +87,12 @@ class WebDriverBuilder:
 
 @dataclass
 class CreateWebDriver:
-    def __init__(self, config: BrowserConfig):
-        self.config = config
-        self._builder = WebDriverBuilder(config)
+    def __init__(self, download_folder: str | Path):
+        self.download_folder: Path | str
+        self.config = BrowserConfig(download_folder=self.download_folder)
+        self._builder = WebDriverBuilder(self.config)
         self.driver: Optional[BrowserDriver] = None
         self.wait: Optional[WebDriverWait] = None
-
-    @property
-    def download_folder(self) -> Path:
-        return self.config.download_folder
-    
-    @download_folder.setter
-    def download_folder(self, value: str | Path) -> None:
-        self.config.download_folder = check_if_directory(value)
     
     @property
     def headless(self) -> bool:
@@ -128,7 +121,7 @@ class CreateWebDriver:
             self.driver.quit()
     
     def wait_for_clickable(self, by: By, value: str) -> None:
-        if not self.wait
+        if not self.wait:
             raise ValueError("WebDriverWait object not initialized")
         self.wait.until(EC.element_to_be_clickable((by, value)))
 
