@@ -6,12 +6,3 @@ from web_scrape_utils.web_driver import (
     WebDriverWait, 
     EC
 )
-
-__all__ = [
-    "WebDriverBuilder",
-    "BrowserConfig",
-    "CreateWebDriver",
-    "By", 
-    "WebDriverWait"
-    "EC"    
-]
