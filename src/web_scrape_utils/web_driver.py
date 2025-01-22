@@ -1,7 +1,7 @@
 from __future__ import annotations
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Optional, Self
+from typing import Optional, Self, Protocol
 import undetected_chromedriver as uc
 from selenium import webdriver
 from selenium.webdriver.support.ui import WebDriverWait
@@ -37,61 +37,89 @@ def driver_wait_until(wait_obj: WebDriverWait, by: By, value: str) -> None:
         wait_obj.until(EC.element_to_be_clickable((by, value))).click()
 
 @dataclass
-class CreateWebDriver:
+class BrowserConfig:
     download_folder: str | Path
-    _headless: bool = True
-    options: Optional[BrowserOptions] = None
-    chrome_driver: Optional[BrowserDriver] = None
-    wait: Optional[WebDriverWait] = None
-    _brave: Optional[Path] = None
+    headless: bool = True
+    window_size: tuple[int, int] = (1920, 1080)
+    page_load_strategy: str = "none"
 
-    def __post_init__(self):
-        self.download_folder = check_if_directory(self.download_folder)
-        self._brave = check_if_brave_installed()
 
-    @property
-    def headless(self) -> bool:
-        return self._headless
+class Browser(Protocol):
+    def create_driver(self, options, BrowserOptions) -> BrowserDriver:
+        ...
 
-    @headless.setter
-    def headless(self, value: bool) -> None:
-        self._headless = value
-        self._set_options()
 
-    def _set_options(self) -> Self:
-        options = BraveOptions() if self._brave else ChromeOptions()
+class ChromeBroswer:
+    def create_driver(self, options: BrowserOptions) -> ChromeDriver:
+        return ChromeDriver(options=options)
+    
+class BraveBrowser:
+    binary_location: Path = Path.home() / 'Applications/Brave Browser.app/Contents/MacOS/Brave Browser'
+    def create_driver(self, options: BrowserOptions) -> BraveDriver:
+        return BraveDriver(options=options)
+    
 
-        if self._brave:
-            ic("Brave Browser detected...")
-            options.binary_location = self._brave
+@dataclass
+class WebDriverBuilder:
+    config: BrowserConfig
+    options: BrowserOptions = field(default_factory=ChromeOptions)
+    _browser: BrowserDriver = field(default_factory=ChromeDriver)
 
-        if self.headless:
-            options.add_argument("--headless=True")  # hide GUI
-        if self.download_folder:
-            _prefs = {
-                'download.default_directory': str(self.download_folder),
-                "download.prompt_for_download": False,
-            }
-            # _prefs = {'download.default_directory': str(self.download_folder)}
-            options.add_experimental_option('prefs', _prefs)
-        options.add_argument("--window-size=1920,1080")  # set window size to native GUI size
-        options.add_argument("start-maximized")  # ensure window is full-screen
-        options.page_load_strategy = "none"  # Load the page as soon as possible
-        self.options = options
+    def with_brave(self) -> Self:
+        self.options = BraveOptions()
+        self._browser = BraveBrowser()
         return self
 
-    def create_driver(self) -> webdriver.Chrome:
-        self._set_options()
-        self.chrome_driver = BraveDriver(options=self.options) if self._brave else ChromeDriver(options=self.options)
-        self.wait = WebDriverWait(self.chrome_driver, 10)
-        return self.chrome_driver
+    def build_options(self):
+        if self.config.headless:
+            self.options.add_argument("--headless=new")
+        
+        self.options.add_experimental_option('prefs', {
+            'download.default_directory': str(self.config.download_folder),
+            "download.prompt_for_download": False,
+        })
 
-    def for_clickable_link_text(self, link_text: str) -> None:
-        driver_wait_until(self.wait, By.LINK_TEXT, link_text)
+        self.options.add_argument(f"--window-size={self.config.window_size[0]},{self.config.window_size[1]}")
+        self.options.add_argument("start-maximized")
+        self.options.page_load_strategy = self.config.page_load_strategy
+        return self.options
+    
 
-    def for_clickable_partial_link_text(self, link_text: str) -> None:
-        driver_wait_until(self.wait, By.PARTIAL_LINK_TEXT, link_text)
+@dataclass
+class CreateWebDriver:
+    def __init__(self, config: BrowserConfig):
+        self.config = config
+        self._builder = WebDriverBuilder(config)
+        self.driver: Optional[BrowserDriver] = None
+        self.wait: Optional[WebDriverWait] = None
+        self.download_folder = check_if_directory(self.config.download_folder)
 
-    def for_clickable_xpath(self, x_path: str) -> None:
-        driver_wait_until(self.wait, By.XPATH, x_path)
+    def _set_download_folder(self, folder: str | Path) -> Self:
+        self.config.download_folder = self.download_folder
+        return self
+
+    def use_brave(self) -> Self:
+        self._builder.with_brave()
+        return self
+    
+    def create(self) -> BrowserDriver:
+        self._builder.build_options()
+        self.driver = self._builder._browser.create_driver(self._builder.options)
+        self.wait = WebDriverWait(self.driver, 10)
+        return self.driver
+    
+    def __enter__(self) -> BrowserDriver:
+        return self.create()
+    
+    def __exit__(self, *args) -> None:
+        if self.driver:
+            self.driver.quit()
+    
+    def wait_for_clickable(self, by: By, value: str) -> None:
+        if not self.wait
+            raise ValueError("WebDriverWait object not initialized")
+        self.wait.until(EC.element_to_be_clickable((by, value)))
+
+    def find_element(self, by: By, value: str) -> BrowserDriver.find_element:
+        return self.driver.find_element(by, value)
         
