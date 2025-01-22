@@ -92,11 +92,23 @@ class CreateWebDriver:
         self._builder = WebDriverBuilder(config)
         self.driver: Optional[BrowserDriver] = None
         self.wait: Optional[WebDriverWait] = None
-        self.download_folder = check_if_directory(self.config.download_folder)
 
-    def _set_download_folder(self, folder: str | Path) -> Self:
-        self.config.download_folder = self.download_folder
-        return self
+    @property
+    def download_folder(self) -> Path:
+        return self.config.download_folder
+    
+    @download_folder.setter
+    def download_folder(self, value: str | Path) -> None:
+        self.config.download_folder = check_if_directory(value)
+    
+    @property
+    def headless(self) -> bool:
+        return self.config.headless
+    
+    @headless.setter
+    def headless(self, value: bool) -> None:
+        self.config.headless = value
+
 
     def use_brave(self) -> Self:
         self._builder.with_brave()
@@ -122,4 +134,6 @@ class CreateWebDriver:
 
     def find_element(self, by: By, value: str) -> BrowserDriver.find_element:
         return self.driver.find_element(by, value)
+    
+    
         
