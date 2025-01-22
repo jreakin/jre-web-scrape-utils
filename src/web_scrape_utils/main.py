@@ -135,5 +135,3 @@ class CreateWebDriver:
     def find_element(self, by: By, value: str) -> BrowserDriver.find_element:
         return self.driver.find_element(by, value)
     
-    
-        
