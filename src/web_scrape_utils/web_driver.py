@@ -85,7 +85,6 @@ class WebDriverBuilder:
         return self.options
     
 
-@dataclass
 class CreateWebDriver:
     def __init__(self, download_folder: str | Path):
         self.download_folder: Path | str
