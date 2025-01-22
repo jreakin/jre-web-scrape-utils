@@ -13,8 +13,8 @@ dependencies = [
     "undetected-chromedriver>=3.5.5",
 ]
 
-# [project.scripts]
-# web-scrape-utils = "web_scrape_utils:web_driver"
+[project.scripts]
+web-scrape-utils = "web_scrape_utils:main"
 
 [build-system]
 requires = ["hatchling"]
