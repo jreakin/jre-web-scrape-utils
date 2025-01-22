@@ -51,7 +51,7 @@ class Browser(Protocol):
 
 class ChromeBroswer:
     def create_driver(self, options: ChromeOptions) -> ChromeDriver:
-        return ChromeDriver(options=options)
+        return ChromeDriver(options=ChromeOptions(options))
     
 class BraveBrowser:
     binary_location: Path = Path.home() / 'Applications/Brave Browser.app/Contents/MacOS/Brave Browser'
