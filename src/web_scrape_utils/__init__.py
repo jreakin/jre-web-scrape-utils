@@ -1,4 +1,4 @@
-from .main import (
+from .web_driver import (
     WebDriverBuilder,
     BrowserConfig,
     CreateWebDriver,
