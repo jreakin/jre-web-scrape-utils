@@ -86,13 +86,12 @@ class CreateWebDriver:
         self.wait = WebDriverWait(self.chrome_driver, 10)
         return self.chrome_driver
 
-    def for_clickable(self, by: By, link_text: str) -> None:
-        self.wait.until(EC.element_to_be_clickable((by, link_text))).click()
-        # driver_wait_until(self.wait, By.LINK_TEXT, link_text)
+    def for_clickable_link_text(self, link_text: str) -> None:
+        driver_wait_until(self.wait, By.LINK_TEXT, link_text)
 
-    # def for_clickable_partial_link_text(self, link_text: str) -> None:
-    #     driver_wait_until(self.wait, By.PARTIAL_LINK_TEXT, link_text)
+    def for_clickable_partial_link_text(self, link_text: str) -> None:
+        driver_wait_until(self.wait, By.PARTIAL_LINK_TEXT, link_text)
 
-    # def for_clickable_xpath(self, x_path: str) -> None:
-    #     driver_wait_until(self.wait, By.XPATH, x_path)
+    def for_clickable_xpath(self, x_path: str) -> None:
+        driver_wait_until(self.wait, By.XPATH, x_path)
         
