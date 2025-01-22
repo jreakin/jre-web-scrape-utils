@@ -88,7 +88,7 @@ class WebDriverBuilder:
 class CreateWebDriver:
     def __init__(self, download_folder: str | Path):
         self.download_folder: Path | str
-        self.config = BrowserConfig(download_folder=self.download_folder)
+        self.config = BrowserConfig(download_folder=download_folder)
         self._builder = WebDriverBuilder(self.config)
         self.driver: Optional[BrowserDriver] = None
         self.wait: Optional[WebDriverWait] = None
