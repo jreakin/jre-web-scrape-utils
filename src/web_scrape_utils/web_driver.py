@@ -87,6 +87,7 @@ class CreateWebDriver:
         return self.chrome_driver
 
     def wait_until_clickable(self, by: By, value: str) -> WebDriverWait:
-        return driver_wait_until(self.wait, by, value)
+        driver_wait_until(self.wait, by, value)
+        return self.chrome_driver
 
         
