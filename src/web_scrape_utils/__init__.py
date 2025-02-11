@@ -1,1 +1,1 @@
-from web_scrape_utils.web_driver import CreateWebDriver, EC, By
+from web_driver import CreateWebDriver, EC, By
