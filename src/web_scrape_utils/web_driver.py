@@ -34,7 +34,7 @@ def check_if_brave_installed() -> Optional[Path]:
         return brave
     
 def driver_wait_until(wait_obj: WebDriverWait, by: By, value: str) -> None:
-        wait_obj.until(EC.element_to_be_clickable((by, value))).click()
+        return wait_obj.until(EC.element_to_be_clickable((by, value))).click()
 
 @dataclass
 class CreateWebDriver:
@@ -86,12 +86,8 @@ class CreateWebDriver:
         self.wait = WebDriverWait(self.chrome_driver, 10)
         return self.chrome_driver
 
-    def for_clickable_link_text(self, link_text: str) -> None:
-        driver_wait_until(self.wait, By.LINK_TEXT, link_text)
+    def wait_until_clickable(self, by: By, value: str) -> BrowserDriver:
+        driver_wait_until(self.wait, by, value)
+        return self.chrome_driver
 
-    def for_clickable_partial_link_text(self, link_text: str) -> None:
-        driver_wait_until(self.wait, By.PARTIAL_LINK_TEXT, link_text)
-
-    def for_clickable_xpath(self, x_path: str) -> None:
-        driver_wait_until(self.wait, By.XPATH, x_path)
         
